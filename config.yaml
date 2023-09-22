@@ -3,7 +3,7 @@ credentials:
     elbrus:
       email: any@any.any
       name: User
-      password: $2b$12$Od3lRLc9yzgLq/PyDXpZwOzPmcTMg3IAd0rhlhfQgxwWpDkRk5dc.
+      password: 
 cookie:
   expiry_days: 90
   key: elbrus
