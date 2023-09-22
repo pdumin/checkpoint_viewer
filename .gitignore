@@ -1,0 +1,7 @@
+private
+.DS_Store
+.streamlit/secrets.toml
+_app.py
+.vscode
+feedback.json
+old
