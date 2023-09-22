@@ -11,21 +11,26 @@ EXCLUDED_FIELDS = [
     'Отметка времени', 'Группа'
 ]
 
-
-def connect():
-    if not os.path.exists('feedback.json'):
+if not os.path.exists('feedback.json'):
         with open('feedback.json', 'w') as f:
             json.dump(dict(st.secrets['gcp_service_account']), f, default=dict)
 
-    gc = gspread.service_account(
-        filename="feedback.json",
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets",
-        ]
-        )
+gc = gspread.service_account(
+    filename="feedback.json",
+    scopes=[
+        "https://www.googleapis.com/auth/spreadsheets",
+    ]
+    )
 
-    tables = gc.open_by_url(st.secrets["private_gsheets_url"])
-
+@st.cache_resource
+def get_table() -> gspread.spreadsheet.Spreadsheet:
+    """
+    Returns:
+        gspread.spreadsheet.Spreadsheet
+    """
+    print('Was called')
+    if gc: 
+        tables = gc.open_by_url(st.secrets["private_gsheets_url"])
     return tables
 
 
@@ -39,8 +44,8 @@ def get_worksheet(group_name: str, n: int = 0) -> Tuple[pd.DataFrame, list]:
     Returns:
         Tuple[pd.DataFrame, list]: answers dataframe and question list
     """
-    tables = connect()
-    worksheet = pd.DataFrame(tables.get_worksheet(n).get_all_records())
+    table = get_table()
+    worksheet = pd.DataFrame(table.get_worksheet(n).get_all_records())
     subset = worksheet[worksheet['Группа'] == group_name]\
         .drop(['Отметка времени', 'Группа'], axis=1)
     questions = subset.columns.tolist()
@@ -53,17 +58,17 @@ def load_answers(load: any, group: any) -> None:
         load (any): any but not None 
         group (any): any but not None
     """
-    if load and group: 
-        df, questions = get_worksheet(group_name=group, n=0)
+    df, questions = get_worksheet(group_name=group, n=0)
 
-        for ix, q in enumerate(questions):
-            st.markdown(f'#### {ix+1}. {q}')
-            for a in df[q].tolist():
-                st.markdown(f'* {a}')
+    for ix, q in enumerate(questions):
+        st.markdown(f'#### {ix+1}. {q}')
+        for a in df[q].tolist():
+            st.markdown(f'* {a}')
 
 if __name__ == "__main__":
     group = st.radio("Группа", ["Satellite", "Sirius", "Meteors"])
     load = st.button('Load answers')
-    load_answers(load, group)
+    if load and group:
+        load_answers(load, group)
     
 
