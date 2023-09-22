@@ -4,8 +4,26 @@ from typing import Tuple
 import gspread
 import streamlit as st
 import pandas as pd
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
 
 st.set_page_config(page_title='Checkpoint viewer', page_icon='logo.png')
+
+
+
+with open('config.yaml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['preauthorized']
+)
+
+authenticator.login('Login', 'main')
 
 EXCLUDED_FIELDS = [
     'Отметка времени', 'Группа'
@@ -28,7 +46,6 @@ def get_table() -> gspread.spreadsheet.Spreadsheet:
     Returns:
         gspread.spreadsheet.Spreadsheet
     """
-    print('Was called')
     if gc: 
         tables = gc.open_by_url(st.secrets["private_gsheets_url"])
     return tables
@@ -66,9 +83,18 @@ def load_answers(load: any, group: any) -> None:
             st.markdown(f'* {a}')
 
 if __name__ == "__main__":
-    group = st.radio("Группа", ["Satellite", "Sirius", "Meteors"])
-    load = st.button('Load answers')
-    if load and group:
-        load_answers(load, group)
+    if st.session_state["authentication_status"]:
+        cols = st.columns(4, gap='large')
+        with cols[0]:
+            group = st.radio("Группа", ["Satellite", "Sirius", "Meteors"])
+            load = st.button('Load answers')
+        with cols[-1]:
+            authenticator.logout('Logout', 'main', key='unique_key')
+        if load and group:
+                load_answers(load, group)
+    elif st.session_state["authentication_status"] is False:
+        st.error('Username/password is incorrect')
+    elif st.session_state["authentication_status"] is None:
+        st.warning('Please enter your username and password')
     
 
