@@ -8,8 +8,17 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 
-st.set_page_config(page_title='Checkpoint viewer', page_icon='logo.png')
+cp_to_link = {
+    "Checkpoint 1" : st.secrets['private_url_cp1'],
+    "Checkpoint 2" : st.secrets['private_url_cp2']
+}
 
+st.set_page_config(page_title='Checkpoint viewer', page_icon='logo.png')
+add_selectbox = st.sidebar.selectbox(
+    "Choose checkpoint",
+    ("Checkpoint 1", "Checkpoint 2")
+)
+# print(add_selectbox)
 
 
 with open('config.yaml') as file:
@@ -40,14 +49,16 @@ gc = gspread.service_account(
     ]
     )
 
-@st.cache_resource
+# @st.cache_resource
 def get_table() -> gspread.spreadsheet.Spreadsheet:
     """
     Returns:
         gspread.spreadsheet.Spreadsheet
     """
     if gc: 
-        tables = gc.open_by_url(st.secrets["private_gsheets_url"])
+        # tables = gc.open_by_url(st.secrets["private_gsheets_url"])
+        print(cp_to_link[add_selectbox])
+        tables = gc.open_by_url(cp_to_link[add_selectbox])
     return tables
 
 
@@ -86,7 +97,7 @@ if __name__ == "__main__":
     if st.session_state["authentication_status"]:
         cols = st.columns(4, gap='large')
         with cols[0]:
-            group = st.radio("Группа", ["Satellite", "Sirius", "Meteors"])
+            group = st.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets"])
             load = st.button('Load answers')
         with cols[-1]:
             authenticator.logout('Logout', 'main', key='unique_key')
