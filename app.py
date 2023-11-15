@@ -97,9 +97,11 @@ if __name__ == "__main__":
     if st.session_state["authentication_status"]:
         cols = st.columns(4, gap='large')
         with cols[0]:
+            # show groups if logged in
             group = st.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets"])
             load = st.button('Load answers')
         with cols[-1]:
+            # make logout button
             authenticator.logout('Logout', 'main', key='unique_key')
         if load and group:
                 load_answers(load, group)
