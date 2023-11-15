@@ -95,6 +95,7 @@ def load_answers(load: any, group: any) -> None:
 
 if __name__ == "__main__":
     if st.session_state["authentication_status"]:
+        print(st.session_state["authentication_status"])
         cols = st.columns(4, gap='large')
         with cols[0]:
             # show groups if logged in
