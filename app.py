@@ -56,8 +56,6 @@ def get_table() -> gspread.spreadsheet.Spreadsheet:
         gspread.spreadsheet.Spreadsheet
     """
     if gc: 
-        # tables = gc.open_by_url(st.secrets["private_gsheets_url"])
-        print(cp_to_link[add_selectbox])
         tables = gc.open_by_url(cp_to_link[add_selectbox])
     return tables
 
@@ -74,8 +72,10 @@ def get_worksheet(group_name: str, n: int = 0) -> Tuple[pd.DataFrame, list]:
     """
     table = get_table()
     worksheet = pd.DataFrame(table.get_worksheet(n).get_all_records())
+
+    # filter by group and drop EXCLUDED_FIELDS
     subset = worksheet[worksheet['Группа'] == group_name]\
-        .drop(['Отметка времени', 'Группа'], axis=1)
+        .drop(EXCLUDED_FIELDS, axis=1)
     questions = subset.columns.tolist()
     return subset, questions
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         print(st.session_state["authentication_status"])
         cols = st.columns(4, gap='large')
         with cols[0]:
-            # show groups if logged in
+            # show group list if logged in
             group = st.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets"])
             load = st.button('Load answers')
         with cols[-1]:
