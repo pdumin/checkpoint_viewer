@@ -9,14 +9,15 @@ import yaml
 from yaml.loader import SafeLoader
 
 cp_to_link = {
-    "Checkpoint 1" : st.secrets['private_url_cp1'],
-    "Checkpoint 2" : st.secrets['private_url_cp2']
+    "Checkpoint 1" : st.secrets['dl_cp1'],
+    "Checkpoint 2" : st.secrets['dl_cp2'],
+    "Checkpoint 3" : st.secrets['dl_cp3']
 }
 
 st.set_page_config(page_title='Checkpoint viewer', page_icon='logo.png')
 add_selectbox = st.sidebar.selectbox(
     "Choose checkpoint",
-    ("Checkpoint 1", "Checkpoint 2")
+    ("Checkpoint 1", "Checkpoint 2", "Checkpoint 3")
 )
 # print(add_selectbox)
 
@@ -99,11 +100,11 @@ if __name__ == "__main__":
         cols = st.columns(4, gap='large')
         with cols[0]:
             # show group list if logged in
-            group = st.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets"])
-            load = st.button('Load answers')
+            group = st.sidebar.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets"])
+            load = st.sidebar.button('Load answers')
         with cols[-1]:
             # make logout button
-            authenticator.logout('Logout', 'main', key='unique_key')
+            authenticator.logout('Logout', 'sidebar', key='unique_key')
         if load and group:
                 load_answers(load, group)
     elif st.session_state["authentication_status"] is False:
