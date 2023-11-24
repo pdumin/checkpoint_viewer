@@ -90,9 +90,11 @@ def load_answers(load: any, group: any) -> None:
     df, questions = get_worksheet(group_name=group, n=0)
 
     for ix, q in enumerate(questions):
-        st.markdown(f'#### {ix+1}. {q}')
+        st.markdown(f'##### {ix+1}. {q}')
         for a in df[q].tolist():
-            st.markdown(f'* {a}')
+            if a:
+                a = str(a).replace("\n", " ")
+                st.markdown(f'* {a}')
 
 if __name__ == "__main__":
     if st.session_state["authentication_status"]:
