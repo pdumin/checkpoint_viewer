@@ -102,7 +102,9 @@ if __name__ == "__main__":
         cols = st.columns(4, gap='large')
         with cols[0]:
             # show group list if logged in
-            group = st.sidebar.radio("Группа", ["Satellite", "Sirius", "Meteors", "Asteroids", "Comets-2023"])
+            group = st.sidebar.radio("Группа", ["Titans-2023", 
+                                                "Rockets-2024"
+                                                ])
             load = st.sidebar.button('Load answers')
         with cols[-1]:
             # make logout button

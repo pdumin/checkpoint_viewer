@@ -5,3 +5,4 @@ _app.py
 .vscode
 feedback.json
 old
+.env
