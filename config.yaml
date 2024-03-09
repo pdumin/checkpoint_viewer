@@ -6,7 +6,7 @@ credentials:
       password: $2b$12$Od3lRLc9yzgLq/PyDXpZwOzPmcTMg3IAd0rhlhfQgxwWpDkRk5dc.
 cookie:
   expiry_days: 90
-  key: elbrus
+  key: "elbrus"
   name: elbrus
 preauthorized:
   emails:
